@@ -284,7 +284,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-Fire activity concentrates in the central and northern interior. The five districts that account for the largest cumulative burn footprint are listed below.
+Fire activity concentrates in the central and northern interior. This provides insight into the spatial distribution of wildfire risk. The five districts that account for the largest cumulative burn footprint are listed below.
 
 ::: {#tbl-top-districts}
 ```{python}
