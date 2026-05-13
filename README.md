@@ -1,3 +1,15 @@
+# SafeYield
+
+Welcome to the SafeYield project repository.
+
+## Resources
+
+- **Deployed App**: [safeyield.streamlit.app/](https://safeyield.streamlit.app/)
+- **Report**: [github.com/dufourlorenzo/safeyield/report.pdf](https://github.com/dufourlorenzo/safeyield/blob/main/report.pdf)
+- **AI logs**:
+  - [Conversation 1](https://chatgpt.com/share/6a043930-a564-832b-be0a-45c3a3c4e2a0)
+  - [Conversation 2](https://chatgpt.com/share/6a0438f7-6798-832f-a946-628ca8d22099)
+
 ## Replication
 
 ### 1. Install uv
