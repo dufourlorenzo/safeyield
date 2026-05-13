@@ -229,7 +229,7 @@ The pipeline joins `{python} f"{n_fires:,}"` fire events covering `{python} n_ye
 
 | Dimension | How SafeYield qualifies |
 |-----------|------------------------|
-| **Volume** | `{python} f"{n_fires:,}"` fire events and `{python} f"{n_houses:,}"` property records across four decades, totalling roughly `{python} f"{total_ha/1e6:.1f}"` million hectares cumulative burned area across all recorded events. |
+| **Volume** | `{python} f"{n_fires:,}"` fire events and `{python} f"{n_houses:,}"` property records across four decades, totalling roughly `{python} f"{total_ha/1e6:.1f}"` million hectares of cumulative burned area across all recorded events. |
 | **Variety** | Time-series CSVs, spatial coordinates, administrative geography, and live market listing metadata combined in a single feature surface. |
 | **Veracity** | Fire records from government registries contain naming inconsistencies across municipalities and missing entries; real estate listings carry uncertain or incomplete geographic coverage. The data quality problem is structural, not incidental, and requires explicit resolution before any modeling can take place. |
 | **Velocity** | Wildfire events are reported continuously through satellite feeds (e.g. NASA FIRMS) and government alert systems, meaning the underlying dataset grows in near real-time during fire seasons. A production system must ingest and score new events as they arrive, not in batch at the end of a season. |
