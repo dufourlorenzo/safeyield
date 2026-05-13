@@ -118,7 +118,7 @@ def run_pipeline():
     )
     impact_df['risk_scaled'] = impact_df['risk_index'] / impact_df['risk_index'].max()
     impact_df['price_adjusted'] = impact_df['price_int'] * (1 - MAX_DISCOUNT * impact_df['risk_scaled'])
-    impact_df['gap_eur'] = impact_df['price_int'] - impact_df['price_adjusted']
+    impact_df['gap_pct'] = ((impact_df['price_int'] - impact_df['price_adjusted']) / impact_df['price_int']) * 100
     
     # Merge coords back for mapping zones
     zone_coords = df_housing.groupby('zone', as_index=False)[['latitude', 'longitude']].mean()

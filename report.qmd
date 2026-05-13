@@ -176,6 +176,7 @@ impact_df = (
 )
 impact_df['risk_scaled']    = impact_df['risk_index'] / impact_df['risk_index'].max()
 impact_df['price_adjusted'] = impact_df['price_int'] * (1 - MAX_DISCOUNT * impact_df['risk_scaled'])
+impact_df['gap_pct']        = ((impact_df['price_int'] - impact_df['price_adjusted']) / impact_df['price_int']) * 100
 impact_df['gap_eur']        = impact_df['price_int'] - impact_df['price_adjusted']
 
 # ── 6. Summary values used in the prose ─────────────────────────────────────
@@ -186,8 +187,8 @@ year_max     = int(df_fires['Year'].max())
 n_years      = year_max - year_min + 1
 total_ha     = float(df_fires['Burned_Area'].sum())
 
-avg_gap_eur  = float(impact_df['gap_eur'].mean())
-top_gap_eur  = float(impact_df['gap_eur'].max())
+avg_gap_pct  = float(impact_df['gap_pct'].mean())
+top_gap_pct  = float(impact_df['gap_pct'].max())
 max_pct      = int(MAX_DISCOUNT * 100)
 
 # Ranked districts by total burned area (used in the results table).
@@ -296,7 +297,7 @@ Top five districts by cumulative burned area, 1980 to 2021.
 
 ```{python}
 #| label: fig-valuation-gap
-#| fig-cap: "Top panel: market median price and risk-adjusted price across 200 zones sorted by increasing wildfire risk. Bottom panel: absolute valuation gap in euros per zone."
+#| fig-cap: "Valuation discount across 200 zones sorted by increasing wildfire risk. Top panel: absolute discount in euros. Bottom panel: discount as a percentage of market price."
 #| fig-pos: "H"
 
 impact_sorted = impact_df.sort_values('risk_scaled').reset_index(drop=True)
@@ -304,26 +305,23 @@ x = impact_sorted.index
 
 fig, (ax_top, ax_bot) = plt.subplots(
     2, 1, figsize=(6.2, 3.4), sharex=True,
-    gridspec_kw={'height_ratios': [2, 1], 'hspace': 0.12},
+    gridspec_kw={'height_ratios': [1, 1], 'hspace': 0.12},
 )
 
-# Top panel: market vs. adjusted price.
-ax_top.plot(x, impact_sorted['price_int'],      label='Market price',        color='steelblue', linewidth=1.2)
-ax_top.plot(x, impact_sorted['price_adjusted'], label='Risk-adjusted price', color='firebrick', linewidth=1.0, alpha=0.9)
-ax_top.set_ylabel('Average property value (€)')
-ax_top.legend(framealpha=0.9, loc='upper right', fontsize=8)
+ax_top.fill_between(x, 0, impact_sorted['gap_eur'], color='firebrick', alpha=0.35)
+ax_top.plot(x, impact_sorted['gap_eur'], color='firebrick', linewidth=0.8)
+ax_top.set_ylabel('Discount (€)')
 
-# Bottom panel: valuation gap in absolute euros, so the spread is legible.
-ax_bot.fill_between(x, 0, impact_sorted['gap_eur'], color='firebrick', alpha=0.35)
-ax_bot.plot(x, impact_sorted['gap_eur'], color='firebrick', linewidth=0.8)
-ax_bot.set_ylabel('Gap (€)')
+ax_bot.fill_between(x, 0, impact_sorted['gap_pct'], color='firebrick', alpha=0.35)
+ax_bot.plot(x, impact_sorted['gap_pct'], color='firebrick', linewidth=0.8)
+ax_bot.set_ylabel('Discount (%)')
 ax_bot.set_xlabel('Zones, sorted by increasing wildfire risk')
 
 plt.tight_layout()
 plt.show()
 ```
 
-The gap widens with risk. The average gap across the 200 zones is roughly `{python} f"€{avg_gap_eur:,.0f}"`, and the worst-affected zone carries a projected discount of `{python} f"€{top_gap_eur:,.0f}"`, equal to the `{python} max_pct`% ceiling. Low-risk zones show no adjustment, which confirms the index applies pressure selectively rather than uniformly across the territory.
+The gap widens with risk. The average discount across the 200 zones is `{python} f"{avg_gap_pct:.1f}"` %, and the worst-affected zone carries a projected discount of `{python} f"{top_gap_pct:.1f}"` %, equal to the `{python} max_pct`% ceiling. Low-risk zones show no adjustment, which confirms the index applies pressure selectively rather than uniformly across the territory.
 
 ## Prototype Maturity
 

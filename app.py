@@ -83,7 +83,8 @@ filtered_impact = df_impact[df_impact['risk_scaled'] >= selected_risk].copy()
 filtered_impact['risk_str'] = filtered_impact['risk_scaled'].map('{:.2f}'.format)
 filtered_impact['price_int_str'] = filtered_impact['price_int'].map('{:,.0f}'.format)
 filtered_impact['price_adj_str'] = filtered_impact['price_adjusted'].map('{:,.0f}'.format)
-filtered_impact['gap_str'] = filtered_impact['gap_eur'].map('{:,.0f}'.format)
+filtered_impact['gap_pct'] = ((filtered_impact['price_int'] - filtered_impact['price_adjusted']) / filtered_impact['price_int']) * 100
+filtered_impact['gap_str'] = filtered_impact['gap_pct'].map('{:.1f}%'.format)
 
 filtered_zones = filtered_impact['zone'].tolist()
 filtered_housing = df_housing[df_housing['zone'].isin(filtered_zones)]
@@ -194,7 +195,7 @@ with tab2:
                 layers=[geojson_layer, layer],
                 initial_view_state=view_state,
                 tooltip={
-                    "html": "<b>Zone ID:</b> {zone}<br/><b>Risk Index:</b> {risk_str}<br/><b>Market Price:</b> €{price_int_str}<br/><b>Adjusted Price:</b> €{price_adj_str}<br/><b>Discount:</b> €{gap_str}",
+                    "html": "<b>Zone ID:</b> {zone}<br/><b>Risk Index:</b> {risk_str}<br/><b>Market Price:</b> €{price_int_str}<br/><b>Adjusted Price:</b> €{price_adj_str}<br/><b>Discount:</b> {gap_str}",
                     "style": {"color": "white"}
                 },
                 map_style='mapbox://styles/mapbox/dark-v10'
@@ -203,20 +204,20 @@ with tab2:
 
         with col2:
             st.subheader("Valuation Summary")
-            avg_gap = filtered_impact['gap_eur'].mean()
-            max_gap = filtered_impact['gap_eur'].max()
-            st.metric("Avg Valuation Discount", f"€{avg_gap:,.0f}")
-            st.metric("Max Valuation Discount", f"€{max_gap:,.0f}")
+            avg_gap = filtered_impact['gap_pct'].mean()
+            max_gap = filtered_impact['gap_pct'].max()
+            st.metric("Avg Valuation Discount", f"{avg_gap:.1f}%")
+            st.metric("Max Valuation Discount", f"{max_gap:.1f}%")
             st.markdown("---")
             st.dataframe(
-                filtered_impact[['zone', 'risk_scaled', 'price_int', 'price_adjusted', 'gap_eur']]
+                filtered_impact[['zone', 'risk_scaled', 'price_int', 'price_adjusted', 'gap_pct']]
                 .sort_values('risk_scaled', ascending=False)
                 .head(10)
                 .style.format({
                     'risk_scaled': '{:.2f}',
                     'price_int': '€{:,.0f}',
                     'price_adjusted': '€{:,.0f}',
-                    'gap_eur': '€{:,.0f}'
+                    'gap_pct': '{:.1f}%'
                 }),
                 use_container_width=True
             )
@@ -261,14 +262,24 @@ with tab3:
         st.plotly_chart(fig2, use_container_width=True)
 
     st.markdown("---")
-    st.subheader("Valuation Gap (Market vs Adjusted Price)")
+    st.subheader("Valuation Discount by Zone (Ranked by Risk)")
     impact_sorted = df_impact.sort_values('risk_scaled').reset_index(drop=True)
-    
-    fig3 = px.line(
-        impact_sorted, x=impact_sorted.index, y=['price_int', 'price_adjusted'],
-        labels={'value': 'Average Property Value (€)', 'index': 'Zones (Sorted by Risk)'},
-        title="Market vs. Risk-Adjusted Price across 200 Zones"
-    )
-    fig3.data[0].name = "Market Price"
-    fig3.data[1].name = "Risk-Adjusted Price"
-    st.plotly_chart(fig3, use_container_width=True)
+    impact_sorted['gap_eur'] = impact_sorted['price_int'] - impact_sorted['price_adjusted']
+
+    col_gap1, col_gap2 = st.columns(2)
+    with col_gap1:
+        fig3 = px.area(
+            impact_sorted, x=impact_sorted.index, y='gap_eur',
+            labels={'gap_eur': 'Discount (€)', 'index': 'Zones (Sorted by Risk)'},
+            title="Valuation Discount (€) across 200 Zones"
+        )
+        fig3.update_traces(fillcolor='rgba(178, 34, 34, 0.3)', line_color='firebrick')
+        st.plotly_chart(fig3, use_container_width=True)
+    with col_gap2:
+        fig4 = px.area(
+            impact_sorted, x=impact_sorted.index, y='gap_pct',
+            labels={'gap_pct': 'Discount (%)', 'index': 'Zones (Sorted by Risk)'},
+            title="Valuation Discount (%) across 200 Zones"
+        )
+        fig4.update_traces(fillcolor='rgba(178, 34, 34, 0.3)', line_color='firebrick')
+        st.plotly_chart(fig4, use_container_width=True)
