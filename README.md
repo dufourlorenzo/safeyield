@@ -32,5 +32,6 @@ Once `uv` is installed, run the following to sync the environment and render the
 ```bash
 uv sync
 uv run quarto render report.qmd
+uv run streamlit run app.py
 
 ```

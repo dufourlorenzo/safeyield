@@ -329,7 +329,7 @@ The gap widens with risk. The average gap across the 200 zones is roughly `{pyth
 
 **Functionality.** The pipeline processes the four CSV sources, builds the spatial model, and calculates the risk index. The static outputs shown above are also available through an interactive web application.
 
-**Accessibility.** The SafeYield dashboard is built in Python and hosted on Streamlit Community Cloud for free public access. It provides 3D mapping and filtering capabilities without requiring local compute. Source code, raw data, and the base `wildfire.ipynb` notebook remain available in the public [Google Drive folder](https://drive.google.com/drive/folders/1-P3whso2JyT89ydIl285xuN8srP4Y7lJ?usp=sharing).
+**Accessibility.** The SafeYield dashboard is built in Python and hosted on Streamlit Community Cloud for free public access. It provides 3D mapping and filtering capabilities without requiring local compute. Source code, raw data, and the base `wildfire.ipynb` notebook remain available in the public [Github repository](https://github.com/dufourlorenzo/safeyield).
 
 **Limitations.** The model is calibrated on historical frequency only; it does not yet absorb climate projections or fuel-load forecasts. The `{python} N_ZONES`-zone grid is roughly municipal in resolution, so neighbourhood-level scoring would need denser housing data and more clusters. The discount curve is set for residential property and would need recalibration for industrial and agricultural assets.
 
